@@ -10,6 +10,12 @@ window.Utils = {
     return Number.isFinite(n) ? Math.trunc(n) : 0;
   },
 
+  /**  小数もOKで数値変換（NaNなら0） */
+  toNumber(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+  },
+
   /** 今日（ローカル）の日付を YYYY-MM-DD 形式で返す */
   todayISO() {
     const d = new Date();

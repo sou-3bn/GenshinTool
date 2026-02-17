@@ -26,6 +26,13 @@ window.StorageAPI = {
       gachaLog: {
         entries: []
       }
+
+      // ✅ 追加：聖遺物スコア
+      artifactScore: {
+        mode: "presetA", // presetA | presetB | custom
+        weights: { cr: 2, cd: 1, atk: 0, hp: 0, def: 0, em: 0, er: 0 },
+        lastInput: { cr: 0, cd: 0, atk: 0, hp: 0, def: 0, em: 0, er: 0 }
+      }
     };
   },
 
