@@ -7,31 +7,27 @@
 
 (function () {
   const appEl = document.getElementById("app");
-
   let state = StorageAPI.load();
 
   /**
-   * stateを更新して保存する
+   * state更新
    * @param {Object} next
    * @param {Object} options { rerender: boolean }
    */
   function setState(next, options = { rerender: true }) {
     state = next;
     StorageAPI.save(state);
-
-    if (options.rerender) {
-      renderRoute();
-    }
+    if (options.rerender) renderRoute();
   }
 
-  /** 現在のハッシュからルート名を取得 */
+  /** 現在ルート */
   function getRoute() {
     const hash = location.hash || "#/home";
     const route = hash.replace("#/", "");
     return route || "home";
   }
 
-  /** ナビのactive状態 */
+  /** ナビのアクティブ反映 */
   function setActiveNav(route) {
     const navMap = {
       home: "navHome",
@@ -57,55 +53,48 @@
     const route = getRoute();
     setActiveNav(route);
 
-    let html = "";
-
+    // ✅ ここがズレてると「遷移しない」
     if (route === "weekly-boss") {
-      html = Pages.weeklyBoss({ state });
-      appEl.innerHTML = html;
+      appEl.innerHTML = Pages.weeklyBoss({ state });
       Pages.weeklyBossSetup?.({ state, setState });
       return;
     }
 
     if (route === "primogem") {
-      html = Pages.primogem({ state });
-      appEl.innerHTML = html;
+      appEl.innerHTML = Pages.primogem({ state });
       Pages.primogemSetup?.({ state, setState });
       return;
     }
 
     if (route === "gacha-log") {
-      html = Pages.gachaLog({ state });
-      appEl.innerHTML = html;
+      appEl.innerHTML = Pages.gachaLog({ state });
       Pages.gachaLogSetup?.({ state, setState });
       return;
     }
 
     if (route === "artifact-score") {
-      html = Pages.artifactScore({ state });
-      appEl.innerHTML = html;
+      // Pages.artifactScore が未定義だとここで落ちる（読み込み順かファイル名が原因）
+      appEl.innerHTML = Pages.artifactScore({ state });
       Pages.artifactScoreSetup?.({ state, setState });
       return;
     }
 
     if (route === "artifact-rolls") {
-      html = Pages.artifactRolls({ state });
-      appEl.innerHTML = html;
+      appEl.innerHTML = Pages.artifactRolls({ state });
       Pages.artifactRollsSetup?.({ state, setState });
       return;
     }
 
     // default: home
-    html = Pages.home({ state });
-    appEl.innerHTML = html;
+    appEl.innerHTML = Pages.home({ state });
   }
 
   /** エクスポート */
   function handleExport() {
     const json = StorageAPI.export(state);
 
-    // クリップボードコピー（失敗してもテキスト表示できる）
+    // クリップボード（失敗してもalertは出す）
     navigator.clipboard?.writeText(json).catch(() => {});
-
     alert(
       "エクスポートしました（JSONをクリップボードにコピーしました）\n" +
       "必要ならメモ帳などに貼り付けて保存してください。"
@@ -141,15 +130,14 @@
     renderRoute();
   }
 
-  // 共通ボタンのイベント
-  document.getElementById("btnExport").addEventListener("click", handleExport);
-  document.getElementById("btnImport").addEventListener("click", openImportDialog);
-  document.getElementById("btnReset").addEventListener("click", handleReset);
-  document.getElementById("btnImportApply").addEventListener("click", (e) => {
-    // dialogのsubmitを止めて処理
+  // 共通イベント
+  document.getElementById("btnExport")?.addEventListener("click", handleExport);
+  document.getElementById("btnImport")?.addEventListener("click", openImportDialog);
+  document.getElementById("btnReset")?.addEventListener("click", handleReset);
+  document.getElementById("btnImportApply")?.addEventListener("click", (e) => {
     e.preventDefault();
     applyImport();
-    document.getElementById("importDialog").close();
+    document.getElementById("importDialog")?.close();
   });
 
   // ルート変化

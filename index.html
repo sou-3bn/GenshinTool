@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>原神 自分用ツール</title>
+  <title>原神ツール</title>
+
   <link rel="icon" href="icon.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="icon.png" />
+
+  <!-- ✅ この構成では css/styles.css -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- 共通ヘッダー -->
   <header class="header">
     <div class="container header__inner">
       <div>
@@ -17,7 +19,6 @@
         <p class="header__subtitle">週ボス素材・原石・ガチャ・聖遺物をまとめて管理</p>
       </div>
 
-      <!-- 右上：データ操作 -->
       <div class="header__actions">
         <button class="btn btn--ghost" id="btnExport">エクスポート</button>
         <button class="btn btn--ghost" id="btnImport">インポート</button>
@@ -26,7 +27,6 @@
     </div>
   </header>
 
-  <!-- 共通ナビ -->
   <nav class="nav">
     <div class="container nav__inner">
       <a class="nav__link" href="#/home" id="navHome">ホーム</a>
@@ -38,10 +38,9 @@
     </div>
   </nav>
 
-  <!-- ここに各ページが描画される -->
   <main class="container" id="app"></main>
 
-  <!-- モーダル（インポート用） -->
+  <!-- インポート用ダイアログ -->
   <dialog class="dialog" id="importDialog">
     <form method="dialog" class="dialog__content">
       <h3 class="dialog__title">インポート（JSON）</h3>
@@ -61,7 +60,7 @@
     </div>
   </footer>
 
-  <!-- JS（順序が大事） -->
+  <!-- ✅ JSの読み込み順が超重要：app.js は一番最後 -->
   <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
 
@@ -71,6 +70,7 @@
   <script src="js/pages/home.js"></script>
   <script src="js/pages/weeklyBoss.js"></script>
   <script src="js/pages/primogem.js"></script>
+
   <script src="js/pages/gachaLog.js"></script>
   <script src="js/pages/artifactScore.js"></script>
   <script src="js/pages/artifactRolls.js"></script>
