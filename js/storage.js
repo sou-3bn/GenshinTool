@@ -1,18 +1,18 @@
 /**
  * storage.js
- * データの保存/読込/エクスポート/インポートを1箇所にまとめる。
- * 将来、クラウド（Supabase/Firebase）に移すときもここを差し替えるだけで済む。
+ * localStorage 永続化と import/export
  */
 
 const STORAGE_KEY = "genshin_tool_state_v1";
 
 window.StorageAPI = {
-  /** 初期状態を作る（保存が無いときに使う） */
+  /** 初期状態 */
   createInitialState() {
     return {
       weeklyBoss: {
         ownedByBoss: {}
       },
+
       primogem: {
         characterDate: "",
         currentPrimo: 0,
@@ -22,12 +22,12 @@ window.StorageAPI = {
         guaranteed: false
       },
 
-      // ✅ 追加：ガチャ記録
+      // ✅ ガチャ記録
       gachaLog: {
         entries: []
-      }
+      },
 
-      // ✅ 追加：聖遺物スコア
+      // ✅ 聖遺物スコア
       artifactScore: {
         mode: "presetA", // presetA | presetB | custom
         weights: { cr: 2, cd: 1, atk: 0, hp: 0, def: 0, em: 0, er: 0 },
@@ -36,37 +36,46 @@ window.StorageAPI = {
     };
   },
 
-  /** stateをロード */
+  /** ロード（古いデータでも壊れないようにマージ） */
   load() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return this.createInitialState();
 
-    const parsed = Utils.safeJsonParse(raw);
-    if (!parsed) return this.createInitialState();
+    let parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      parsed = null;
+    }
+    if (!parsed || typeof parsed !== "object") return this.createInitialState();
 
-    // 破損・古い形式の保険（最低限）
     return {
       ...this.createInitialState(),
       ...parsed
     };
   },
 
-  /** stateを保存 */
+  /** 保存 */
   save(state) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   },
 
-  /** JSON文字列としてエクスポート */
+  /** エクスポート */
   export(state) {
     return JSON.stringify(state, null, 2);
   },
 
-  /** JSON文字列からインポート（成功時はstateを返す、失敗ならnull） */
+  /** インポート（最低限チェックしてマージ） */
   import(jsonText) {
-    const parsed = Utils.safeJsonParse(jsonText);
-    if (!parsed) return null;
+    let parsed = null;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (e) {
+      parsed = null;
+    }
+    if (!parsed || typeof parsed !== "object") return null;
 
-    // 最低限の形チェック（厳密にしすぎない）
+    // 最低限の形（壊れたJSONや別データ混入のガード）
     if (!parsed.weeklyBoss || !parsed.primogem) return null;
 
     return {
@@ -75,7 +84,7 @@ window.StorageAPI = {
     };
   },
 
-  /** 全リセット */
+  /** リセット */
   reset() {
     localStorage.removeItem(STORAGE_KEY);
   }
