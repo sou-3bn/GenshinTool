@@ -1,8 +1,3 @@
-/**
- * home.js
- * ホーム（メニュー）ページ。
- */
-
 window.Pages = window.Pages || {};
 window.Pages.home = function renderHomePage({ state }) {
   return `
@@ -23,6 +18,12 @@ window.Pages.home = function renderHomePage({ state }) {
           <h3 style="margin-top:0;">原石計算</h3>
           <p class="muted">登場日までに必要な原石/日を計算します（運命・確定状態対応）。</p>
           <a class="btn" href="#/primogem" style="display:inline-block;text-decoration:none;">開く</a>
+        </div>
+
+        <div class="card" style="box-shadow:none;">
+          <h3 style="margin-top:0;">ガチャ記録</h3>
+          <p class="muted">ガチャ回数を日付・種別ごとに記録し、合計を確認できます。</p>
+          <a class="btn" href="#/gacha-log" style="display:inline-block;text-decoration:none;">開く</a>
         </div>
       </div>
     </section>

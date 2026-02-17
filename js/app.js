@@ -10,11 +10,6 @@
 
   let state = StorageAPI.load();
 
-  /**
-   * stateを更新して保存する
-   * @param {Object} next
-   * @param {Object} options { rerender: boolean }
-   */
   function setState(next, options = { rerender: true }) {
     state = next;
     StorageAPI.save(state);
@@ -24,19 +19,18 @@
     }
   }
 
-  /** 現在のハッシュからルート名を取得 */
   function getRoute() {
     const hash = location.hash || "#/home";
     const route = hash.replace("#/", "");
     return route || "home";
   }
 
-  /** ナビのactive状態 */
   function setActiveNav(route) {
     const navMap = {
       home: "navHome",
       "weekly-boss": "navWeekly",
-      primogem: "navPrimo"
+      primogem: "navPrimo",
+      "gacha-log": "navGacha" // ✅ 追加
     };
 
     Object.values(navMap).forEach(id => {
@@ -49,7 +43,6 @@
     if (activeEl) activeEl.classList.add("is-active");
   }
 
-  /** ルート描画 */
   function renderRoute() {
     const route = getRoute();
     setActiveNav(route);
@@ -70,22 +63,24 @@
       return;
     }
 
-    // default: home
+    // ✅ 追加：ガチャ記録
+    if (route === "gacha-log") {
+      html = Pages.gachaLog({ state });
+      appEl.innerHTML = html;
+      Pages.gachaLogSetup?.({ state, setState });
+      return;
+    }
+
     html = Pages.home({ state });
     appEl.innerHTML = html;
   }
 
-  /** エクスポート */
   function handleExport() {
     const json = StorageAPI.export(state);
-
-    // クリップボードコピー（失敗してもテキスト表示できる）
     navigator.clipboard?.writeText(json).catch(() => {});
-
     alert("エクスポートしました（JSONをクリップボードにコピーしました）\n必要ならメモ帳などに貼り付けて保存してください。");
   }
 
-  /** インポート */
   function openImportDialog() {
     const dlg = document.getElementById("importDialog");
     const ta = document.getElementById("importTextarea");
@@ -104,7 +99,6 @@
     alert("インポートしました。");
   }
 
-  /** リセット */
   function handleReset() {
     const ok = confirm("全データをリセットします。よろしいですか？");
     if (!ok) return;
@@ -114,21 +108,17 @@
     renderRoute();
   }
 
-  // 共通ボタンのイベント
   document.getElementById("btnExport").addEventListener("click", handleExport);
   document.getElementById("btnImport").addEventListener("click", openImportDialog);
   document.getElementById("btnReset").addEventListener("click", handleReset);
   document.getElementById("btnImportApply").addEventListener("click", (e) => {
-    // dialogのsubmitを止めて処理
     e.preventDefault();
     applyImport();
     document.getElementById("importDialog").close();
   });
 
-  // ルート変化
   window.addEventListener("hashchange", renderRoute);
 
-  // 初期表示
   if (!location.hash) location.hash = "#/home";
   renderRoute();
 })();

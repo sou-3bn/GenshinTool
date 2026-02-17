@@ -11,18 +11,20 @@ window.StorageAPI = {
   createInitialState() {
     return {
       weeklyBoss: {
-        // ボスごとの「所持数」（materials配列と同じ順番で管理）
-        // 例：{ "トワリン": [1,2,0], ... }
         ownedByBoss: {}
       },
       primogem: {
-        // 原石計算の入力値（UI復元用）
         characterDate: "",
         currentPrimo: 0,
         currentPulls: 0,
         currentFates: 0,
         assumeLose5050: false,
         guaranteed: false
+      },
+
+      // ✅ 追加：ガチャ記録
+      gachaLog: {
+        entries: []
       }
     };
   },
